@@ -14,6 +14,7 @@ mcp = FastMCP("orbstack-mcp")
 
 # ── Helper ─────────────────────────────────────────────────────────
 
+
 def run(cmd: str) -> str:
     """Run a shell command and return its output."""
     try:
@@ -23,7 +24,11 @@ def run(cmd: str) -> str:
         output = result.stdout.strip()
         if result.returncode != 0:
             error = result.stderr.strip()
-            return f"Error: {error}" if error else f"Command failed with code {result.returncode}"
+            return (
+                f"Error: {error}"
+                if error
+                else f"Command failed with code {result.returncode}"
+            )
         return output if output else "Done."
     except subprocess.TimeoutExpired:
         return "Error: Command timed out after 30 seconds."
@@ -32,6 +37,7 @@ def run(cmd: str) -> str:
 
 
 # ── Docker Container Tools ─────────────────────────────────────────
+
 
 @mcp.tool()
 def docker_list_containers(all: bool = False) -> str:
@@ -175,10 +181,13 @@ def docker_stats(containers: Optional[list[str]] = None) -> str:
 
 # ── Docker Image Tools ─────────────────────────────────────────────
 
+
 @mcp.tool()
 def docker_images() -> str:
     """List all Docker images."""
-    return run("docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.ID}}\\t{{.Size}}'")
+    return run(
+        "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.ID}}\\t{{.Size}}'"
+    )
 
 
 @mcp.tool()
@@ -207,6 +216,7 @@ def docker_rmi(images: list[str], force: bool = False) -> str:
 
 
 # ── Docker Compose Tools ───────────────────────────────────────────
+
 
 @mcp.tool()
 def docker_compose_up(
@@ -253,6 +263,7 @@ def docker_compose_ps(project_dir: str) -> str:
 
 # ── Docker System Tools ────────────────────────────────────────────
 
+
 @mcp.tool()
 def docker_system_prune(all: bool = False, volumes: bool = False) -> str:
     """Remove unused Docker data (containers, images, networks, build cache).
@@ -277,6 +288,7 @@ def docker_system_df() -> str:
 
 # ── Docker Network Tools ───────────────────────────────────────────
 
+
 @mcp.tool()
 def docker_network_ls() -> str:
     """List Docker networks."""
@@ -300,6 +312,7 @@ def docker_network_create(name: str, driver: Optional[str] = None) -> str:
 
 # ── Docker Volume Tools ────────────────────────────────────────────
 
+
 @mcp.tool()
 def docker_volume_ls() -> str:
     """List Docker volumes."""
@@ -317,6 +330,7 @@ def docker_volume_create(name: str) -> str:
 
 
 # ── OrbStack VM Tools ─────────────────────────────────────────────
+
 
 @mcp.tool()
 def orb_list() -> str:
@@ -395,6 +409,7 @@ def orb_info() -> str:
 
 # ── Kubernetes Tools ───────────────────────────────────────────────
 
+
 @mcp.tool()
 def kubectl_get(
     resource: str,
@@ -417,9 +432,7 @@ def kubectl_get(
 
 
 @mcp.tool()
-def kubectl_describe(
-    resource: str, name: str, namespace: Optional[str] = None
-) -> str:
+def kubectl_describe(resource: str, name: str, namespace: Optional[str] = None) -> str:
     """Describe a Kubernetes resource in detail.
 
     Args:
